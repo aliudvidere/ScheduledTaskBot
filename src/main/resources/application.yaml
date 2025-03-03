@@ -2,7 +2,7 @@ spring:
   application:
     name: ScheduledTaskBot
   liquibase:
-    change-log: classpath:main/resources/changelog/db.changelog-master.xml
+    change-log: classpath:/db/changelog/db.changelog-master.xml
     enabled: true
   profiles:
     active: dev
