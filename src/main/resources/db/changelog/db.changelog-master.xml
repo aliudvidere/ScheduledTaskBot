@@ -8,4 +8,6 @@
 
     <include file="changesets/addLastNotifyColumn/addLastNotifyColumn.xml" relativeToChangelogFile="true"/>
 
+    <include file="changesets/createPeriodicTaskTable/createPeriodicTaskTable.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
