@@ -30,9 +30,6 @@ public class CommandService {
     @Value("${app.lunaToken}")
     private String lunaToken;
 
-    @Value("${app.notifyPeriod}")
-    private Long notifyPeriod;
-
     public SendMessage register(Message registerMessage) {
         SendMessage message = new SendMessage();
         message.setChatId(registerMessage.getChatId());
@@ -95,7 +92,7 @@ public class CommandService {
         String messageText;
         String lunaStaffResponse;
         String lunaActivityResponse;
-        List<BotUserEntity> botUserEntityList = botUserEntityRepository.findAllByLastNotifyIsLessThanEqual(LocalDateTime.now().minusSeconds(notifyPeriod));
+        List<BotUserEntity> botUserEntityList = botUserEntityRepository.findAll();
         botUserEntityList.forEach(botUserEntity -> {
             botUserEntity.setLastNotify(LocalDateTime.now());
             botUserEntityRepository.save(botUserEntity);
