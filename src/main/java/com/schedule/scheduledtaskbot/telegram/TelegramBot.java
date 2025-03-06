@@ -30,7 +30,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     List<BotCommand> commands = Arrays.asList(
             new BotCommand(START_COMMAND, START_COMMAND_DESCRIPTION),
             new BotCommand(REGISTER_COMMAND, REGISTER_COMMAND_DESCRIPTION),
-            new BotCommand(ACTIVITY_DATES_COMMAND, ACTIVITY_DATES_COMMAND_DESCRIPTION)
+            new BotCommand(ACTIVITY_DATES_COMMAND, ACTIVITY_DATES_COMMAND_DESCRIPTION),
+            new BotCommand(TASKS_COMMAND, TASKS_COMMAND_DESCRIPTION)
     );
 
     public TelegramBot(BotProperties botProperties, CommandService commandService) throws TelegramApiException {
@@ -60,6 +61,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                         sendMessage(commandService.register(update.getMessage()));
                     case ACTIVITY_DATES_COMMAND ->
                         sendMessage(commandService.sendLunaMessage(update.getMessage().getChatId().toString()));
+                    case TASKS_COMMAND ->
+                        sendMessage(commandService.getPeriodicTasks(update.getMessage().getChatId().toString()));
                 }
             }
             else {

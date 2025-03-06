@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schedule.scheduledtaskbot.client.LunaClient;
 import com.schedule.scheduledtaskbot.model.entity.BotUserEntity;
+import com.schedule.scheduledtaskbot.model.entity.PeriodicTaskEntity;
 import com.schedule.scheduledtaskbot.repository.BotUserEntityRepository;
+import com.schedule.scheduledtaskbot.repository.PeriodicTaskEntityRepository;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,8 @@ public class CommandService {
     private final BotUserEntityRepository botUserEntityRepository;
 
     private final LunaClient lunaClient;
+
+    private final PeriodicTaskEntityRepository periodicTaskEntityRepository;
 
     @Value("${app.lunaToken}")
     private String lunaToken;
@@ -126,6 +130,10 @@ public class CommandService {
             return new ArrayList<>();
         }
         return botUserEntityList.stream().map(t -> new SendMessage(t.getTgCode(), messageText)).toList();
+    }
+
+    public SendMessage getPeriodicTasks(String chatId) {
+        return new SendMessage(chatId, periodicTaskEntityRepository.findAll().stream().map(PeriodicTaskEntity::toString).collect(Collectors.joining("\n")));
     }
 
     private String getNeededStaffId(String lunaStaffResponse) {

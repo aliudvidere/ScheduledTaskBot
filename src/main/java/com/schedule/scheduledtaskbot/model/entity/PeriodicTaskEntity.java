@@ -31,4 +31,10 @@ public class PeriodicTaskEntity {
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
+
+    @Override
+    public String toString() {
+        return "PeriodicTaskEntity [className=" + className + ", methodName=" + methodName +
+                ", intervalSeconds=" + intervalSeconds + ", isActive=" + isActive + "]";
+    }
 }
