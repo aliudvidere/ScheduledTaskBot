@@ -68,15 +68,13 @@ public class CommandService {
         catch (FeignException feignClientException) {
             return new SendMessage(chatId, feignClientException.getLocalizedMessage());
         }
-        List<Object> staff;
         Map<String, Object> activities;
         try {
-            staff = new ObjectMapper().readValue(lunaStaffResponse, ArrayList.class);
             activities = new ObjectMapper().readValue(lunaActivityResponse, HashMap.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        String staffNeededId = staff.stream().filter(t -> ((Map<String, Object>)t).get("name").toString().equals("Ольга Кремень")).findFirst().map(t -> ((Map<String, Object>)t).get("id").toString()).orElse(null);
+        String staffNeededId = getNeededStaffId(lunaStaffResponse);
         if (staffNeededId != null) {
             List<Map<String, Object>> data = (List<Map<String, Object>>) activities.get("data");
             data = data.stream().filter(t -> t.get("staff_id").toString().equals(staffNeededId)).toList();
@@ -109,15 +107,14 @@ public class CommandService {
         catch (FeignException feignClientException) {
             return botUserEntityList.stream().map(t -> new SendMessage(t.getTgCode(), feignClientException.getLocalizedMessage())).toList();
         }
-        List<Object> staff;
         Map<String, Object> activities;
         try {
-            staff = new ObjectMapper().readValue(lunaStaffResponse, ArrayList.class);
             activities = new ObjectMapper().readValue(lunaActivityResponse, HashMap.class);
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        String staffNeededId = staff.stream().filter(t -> ((Map<String, Object>)t).get("name").toString().equals("Ольга Кремень")).findFirst().map(t -> ((Map<String, Object>)t).get("id").toString()).orElse(null);
+        String staffNeededId = getNeededStaffId(lunaStaffResponse);
         if (staffNeededId != null) {
             List<Map<String, Object>> data = (List<Map<String, Object>>) activities.get("data");
             data = data.stream().filter(t -> t.get("staff_id").toString().equals(staffNeededId) && Integer.parseInt(t.get("capacity").toString()) - Integer.parseInt(t.get("records_count").toString()) > 0).toList();
@@ -132,5 +129,15 @@ public class CommandService {
             return new ArrayList<>();
         }
         return botUserEntityList.stream().map(t -> new SendMessage(t.getTgCode(), messageText)).toList();
+    }
+
+    private String getNeededStaffId(String lunaStaffResponse) {
+        List<Object> staff;
+        try {
+            staff = new ObjectMapper().readValue(lunaStaffResponse, ArrayList.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return staff.stream().filter(t -> ((Map<String, Object>)t).get("name").toString().equals("Ольга Кремень")).findFirst().map(t -> ((Map<String, Object>)t).get("id").toString()).orElse(null);
     }
 }
