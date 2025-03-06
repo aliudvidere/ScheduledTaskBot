@@ -7,10 +7,10 @@ import com.schedule.scheduledtaskbot.model.entity.BotUserEntity;
 import com.schedule.scheduledtaskbot.repository.BotUserEntityRepository;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +25,9 @@ public class CommandService {
     private final BotUserEntityRepository botUserEntityRepository;
 
     private final LunaClient lunaClient;
+
+    @Value("${app.lunaToken}")
+    private String lunaToken;
 
     public SendMessage register(Message registerMessage) {
         SendMessage message = new SendMessage();
@@ -50,13 +53,49 @@ public class CommandService {
         return message;
     }
 
+    public SendMessage sendLunaMessage(String chatId) {
+        String messageText;
+        String lunaStaffResponse;
+        String lunaActivityResponse;
+        try {
+            lunaStaffResponse = lunaClient.getStaff(lunaToken);
+            lunaActivityResponse = lunaClient.getActivity(lunaToken);
+        }
+        catch (FeignException feignClientException) {
+            return new SendMessage(chatId, feignClientException.getLocalizedMessage());
+        }
+        List<Object> staff;
+        Map<String, Object> activities;
+        try {
+            staff = new ObjectMapper().readValue(lunaStaffResponse, ArrayList.class);
+            activities = new ObjectMapper().readValue(lunaActivityResponse, HashMap.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        String staffNeededId = staff.stream().filter(t -> ((Map<String, Object>)t).get("name").toString().equals("Ольга Кремень")).findFirst().map(t -> ((Map<String, Object>)t).get("id").toString()).orElse(null);
+        if (staffNeededId != null) {
+            List<Map<String, Object>> data = (List<Map<String, Object>>) activities.get("data");
+            data = data.stream().filter(t -> t.get("staff_id").toString().equals(staffNeededId)).toList();
+            if (data.isEmpty()) {
+                messageText = "No interested activities found";
+            }
+            else {
+                messageText = data.stream().map(t -> t.get("date") + "--" + t.get("records_count") + "/" + t.get("capacity") + "\n").collect(Collectors.joining("\n"));
+            }
+        }
+        else {
+            messageText = "No interested instructors found";
+        }
+        return new SendMessage(chatId, messageText);
+    }
+
     public List<SendMessage> sendLunaMessage() {
         String messageText;
-        String lunaStaffResponse = "";
-        String lunaActivityResponse = "";
+        String lunaStaffResponse;
+        String lunaActivityResponse;
         try {
-            lunaStaffResponse = lunaClient.getStaff("Bearer gtcwf654agufy25gsadh");
-            lunaActivityResponse = lunaClient.getActivity("Bearer gtcwf654agufy25gsadh");
+            lunaStaffResponse = lunaClient.getStaff(lunaToken);
+            lunaActivityResponse = lunaClient.getActivity(lunaToken);
         }
         catch (FeignException feignClientException) {
             return botUserEntityRepository.findAll().stream().map(t -> new SendMessage(t.getTgCode(), feignClientException.getLocalizedMessage())).toList();

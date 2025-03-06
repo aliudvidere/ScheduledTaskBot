@@ -59,7 +59,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     case REGISTER_COMMAND ->
                         sendMessage(commandService.register(update.getMessage()));
                     case ACTIVITY_DATES_COMMAND ->
-                        commandService.sendLunaMessage().forEach(this::sendMessage);
+                        sendMessage(commandService.sendLunaMessage(update.getMessage().getChatId().toString()));
                 }
             }
             else {
