@@ -4,8 +4,13 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="changesets/createBotUserTable/createBotUserTable.xml" relativeToChangelogFile="true"/>
+    <changeSet id="add_bot_user_last_notify_column" author="Vladimir.Berman">
+        <addColumn tableName="bot_user">
+            <column name="last_notify" type="timestamptz" defaultValueComputed="now()"/>
+        </addColumn>
 
-    <include file="changesets/addLastNotifyColumn/addLastNotifyColumn.xml" relativeToChangelogFile="true"/>
-
+        <rollback>
+            <dropColumn tableName="bot_user" columnName="last_notify"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

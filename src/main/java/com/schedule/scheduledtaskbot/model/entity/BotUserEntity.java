@@ -3,6 +3,8 @@ package com.schedule.scheduledtaskbot.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "BOT_USER")
 @Getter
@@ -24,4 +26,7 @@ public class BotUserEntity {
 
     @Column(name = "tg_code", unique = true, nullable = false)
     private String tgCode;
+
+    @Column(name="last_notify")
+    private LocalDateTime lastNotify;
 }

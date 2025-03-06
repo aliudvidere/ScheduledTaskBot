@@ -8,3 +8,4 @@ bot:
   token: ${BOT_TOKEN}
 app:
   lunaToken: ${LUNA_TOKEN}
+  notifyPeriod: ${NOTIFY_PERIOD}

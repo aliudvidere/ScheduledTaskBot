@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,9 @@ public class CommandService {
 
     @Value("${app.lunaToken}")
     private String lunaToken;
+
+    @Value("${app.notifyPeriod}")
+    private Long notifyPeriod;
 
     public SendMessage register(Message registerMessage) {
         SendMessage message = new SendMessage();
@@ -93,12 +97,17 @@ public class CommandService {
         String messageText;
         String lunaStaffResponse;
         String lunaActivityResponse;
+        List<BotUserEntity> botUserEntityList = botUserEntityRepository.findAllByLastNotifyIsGreaterThanEqual(LocalDateTime.now().minusSeconds(notifyPeriod));
+        botUserEntityList.forEach(botUserEntity -> {
+            botUserEntity.setLastNotify(LocalDateTime.now());
+            botUserEntityRepository.save(botUserEntity);
+        });
         try {
             lunaStaffResponse = lunaClient.getStaff(lunaToken);
             lunaActivityResponse = lunaClient.getActivity(lunaToken);
         }
         catch (FeignException feignClientException) {
-            return botUserEntityRepository.findAll().stream().map(t -> new SendMessage(t.getTgCode(), feignClientException.getLocalizedMessage())).toList();
+            return botUserEntityList.stream().map(t -> new SendMessage(t.getTgCode(), feignClientException.getLocalizedMessage())).toList();
         }
         List<Object> staff;
         Map<String, Object> activities;
@@ -122,6 +131,6 @@ public class CommandService {
         else {
             return new ArrayList<>();
         }
-        return botUserEntityRepository.findAll().stream().map(t -> new SendMessage(t.getTgCode(), messageText)).toList();
+        return botUserEntityList.stream().map(t -> new SendMessage(t.getTgCode(), messageText)).toList();
     }
 }
