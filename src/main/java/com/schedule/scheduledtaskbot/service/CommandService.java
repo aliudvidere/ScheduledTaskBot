@@ -97,7 +97,7 @@ public class CommandService {
         String messageText;
         String lunaStaffResponse;
         String lunaActivityResponse;
-        List<BotUserEntity> botUserEntityList = botUserEntityRepository.findAllByLastNotifyIsGreaterThanEqual(LocalDateTime.now().minusSeconds(notifyPeriod));
+        List<BotUserEntity> botUserEntityList = botUserEntityRepository.findAllByLastNotifyIsLessThanEqual(LocalDateTime.now().minusSeconds(notifyPeriod));
         botUserEntityList.forEach(botUserEntity -> {
             botUserEntity.setLastNotify(LocalDateTime.now());
             botUserEntityRepository.save(botUserEntity);

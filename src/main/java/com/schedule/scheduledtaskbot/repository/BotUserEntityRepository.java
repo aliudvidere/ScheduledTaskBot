@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface BotUserEntityRepository extends JpaRepository<BotUserEntity, Integer> {
     Optional<BotUserEntity> findByTgCode(String tgCode);
 
-    List<BotUserEntity> findAllByLastNotifyIsGreaterThanEqual(LocalDateTime needNotify);
+    List<BotUserEntity> findAllByLastNotifyIsLessThanEqual(LocalDateTime needNotify);
 }
