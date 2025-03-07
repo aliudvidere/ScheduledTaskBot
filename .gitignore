@@ -35,7 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
-/deploy/.env
-/deploy/compose.yaml
-/deploy/dockerfile
+/deploy
+/logs
 /src/main/resources/application-dev.yaml

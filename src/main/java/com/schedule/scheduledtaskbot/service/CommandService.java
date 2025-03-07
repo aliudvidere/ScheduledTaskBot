@@ -9,6 +9,7 @@ import com.schedule.scheduledtaskbot.repository.BotUserEntityRepository;
 import com.schedule.scheduledtaskbot.repository.PeriodicTaskEntityRepository;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import static com.schedule.scheduledtaskbot.constants.MessageConstants.YOU_HAVE_ALREADY_REGISTERED;
 import static com.schedule.scheduledtaskbot.constants.MessageConstants.YOU_HAVE_SUCCESSFULLY_REGISTERED;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommandService {
@@ -67,6 +69,7 @@ public class CommandService {
             lunaActivityResponse = lunaClient.getActivity(lunaToken);
         }
         catch (FeignException feignClientException) {
+            log.error(feignClientException.getMessage());
             return new SendMessage(chatId, feignClientException.getLocalizedMessage());
         }
         Map<String, Object> activities;
@@ -106,6 +109,7 @@ public class CommandService {
             lunaActivityResponse = lunaClient.getActivity(lunaToken);
         }
         catch (FeignException feignClientException) {
+            log.error(feignClientException.getMessage());
             return botUserEntityList.stream().map(t -> new SendMessage(t.getTgCode(), feignClientException.getLocalizedMessage())).toList();
         }
         Map<String, Object> activities;

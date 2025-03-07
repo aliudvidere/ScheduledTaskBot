@@ -1,10 +1,12 @@
 package com.schedule.scheduledtaskbot.service;
 
 import com.schedule.scheduledtaskbot.config.ApplicationContextProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 
+@Slf4j
 @Service
 public class PeriodicTaskExecutor {
 
@@ -23,8 +25,7 @@ public class PeriodicTaskExecutor {
             method.invoke(instance);
 
         } catch (Exception e) {
-            System.err.println("Error executing task: " + e.getMessage());
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 }
