@@ -29,4 +29,7 @@ public class BotUserEntity {
 
     @Column(name="last_notify")
     private LocalDateTime lastNotify;
+
+    @Column(name="last_message")
+    private String lastMessage;
 }

@@ -10,7 +10,7 @@ logging:
   level:
     root: INFO
   file:
-    name: /var/logs/ScheduledTaskBot/application.log
+    name: /var/log/ScheduledTaskBot/application.log
   structured:
     format:
       console: ecs

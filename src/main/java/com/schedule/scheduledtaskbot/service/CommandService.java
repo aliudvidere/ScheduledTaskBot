@@ -133,7 +133,11 @@ public class CommandService {
         else {
             return new ArrayList<>();
         }
-        return botUserEntityList.stream().map(t -> new SendMessage(t.getTgCode(), messageText)).toList();
+        return botUserEntityList.stream().filter(t -> !t.getLastMessage().equals(messageText)).map(t -> {
+            t.setLastMessage(messageText);
+            botUserEntityRepository.save(t);
+            return new SendMessage(t.getTgCode(), messageText);
+        }).toList();
     }
 
     public SendMessage getPeriodicTasks(String chatId) {
