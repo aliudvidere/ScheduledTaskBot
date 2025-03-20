@@ -6,7 +6,7 @@
 
     <changeSet id="add_bot_user_last_message_column" author="Vladimir.Berman">
         <addColumn tableName="bot_user">
-            <column name="message" type="text"/>
+            <column name="message" type="text" defaultValue=""/>
         </addColumn>
 
         <rollback>
