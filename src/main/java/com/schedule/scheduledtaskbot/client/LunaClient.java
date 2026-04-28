@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
         path = "/api/v1")
 public interface LunaClient {
 
-    @GetMapping(value = "/book_staff/909532")
+    @GetMapping(value = "/activity/909532/filters")
     String getStaff(@RequestHeader("Authorization") String authHeader);
 
     @GetMapping(value = "/activity/909532/search?count=1000&till=9999-01-01")

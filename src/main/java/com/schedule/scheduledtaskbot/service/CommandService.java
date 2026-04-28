@@ -145,12 +145,24 @@ public class CommandService {
     }
 
     private String getNeededStaffId(String lunaStaffResponse) {
-        List<Object> staff;
         try {
-            staff = new ObjectMapper().readValue(lunaStaffResponse, ArrayList.class);
+            Map<String, Object> root = new ObjectMapper().readValue(lunaStaffResponse, Map.class);
+
+            List<Map<String, Object>> sections = (List<Map<String, Object>>) root.get("data");
+
+            return sections.stream()
+                    .filter(s -> "staff".equals(s.get("code")))
+                    .findFirst()
+                    .map(s -> (List<Map<String, Object>>) s.get("data"))
+                    .orElse(List.of())
+                    .stream()
+                    .filter(staff -> "Ольга Кремень".equals(staff.get("name")))
+                    .findFirst()
+                    .map(staff -> staff.get("id").toString())
+                    .orElse(null);
+
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        return staff.stream().filter(t -> ((Map<String, Object>)t).get("name").toString().equals("Ольга Кремень")).findFirst().map(t -> ((Map<String, Object>)t).get("id").toString()).orElse(null);
     }
 }
