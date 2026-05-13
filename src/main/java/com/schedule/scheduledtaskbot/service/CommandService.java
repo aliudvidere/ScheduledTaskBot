@@ -36,6 +36,8 @@ public class CommandService {
     @Value("${app.lunaToken}")
     private String lunaToken;
 
+    private static final String ACTIVITY_INFO_URL = "https://b979328.yclients.com/company/909532/activity/info/%s";
+
     public SendMessage register(Message registerMessage) {
         SendMessage message = new SendMessage();
         message.setChatId(registerMessage.getChatId());
@@ -86,7 +88,15 @@ public class CommandService {
                 messageText = "No interested activities found";
             }
             else {
-                messageText = data.stream().map(t -> t.get("date") + "--" + t.get("records_count") + "/" + t.get("capacity") + "\n").collect(Collectors.joining("\n"));
+                messageText = data.stream()
+                        .map(t -> t.get("date")
+                                + "--"
+                                + t.get("records_count")
+                                + "/"
+                                + t.get("capacity")
+                                + "\n"
+                                + ACTIVITY_INFO_URL.formatted(t.get("id")))
+                        .collect(Collectors.joining("\n\n"));
             }
         }
         else {
@@ -127,7 +137,15 @@ public class CommandService {
                 return new ArrayList<>();
             }
             else {
-                messageText = data.stream().map(t -> t.get("date") + ":" + t.get("capacity") + ":" + t.get("records_count") + "\n").collect(Collectors.joining("\n"));
+                messageText = data.stream()
+                        .map(t -> t.get("date")
+                                + ":"
+                                + t.get("capacity")
+                                + ":"
+                                + t.get("records_count")
+                                + "\n"
+                                + ACTIVITY_INFO_URL.formatted(t.get("id")))
+                        .collect(Collectors.joining("\n\n"));
             }
         }
         else {
