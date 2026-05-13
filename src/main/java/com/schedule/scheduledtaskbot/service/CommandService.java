@@ -90,19 +90,23 @@ public class CommandService {
             else {
                 messageText = data.stream()
                         .map(t -> t.get("date")
-                                + "--"
+                                + " - "
                                 + t.get("records_count")
                                 + "/"
                                 + t.get("capacity")
-                                + "\n"
-                                + ACTIVITY_INFO_URL.formatted(t.get("id")))
+                                + " - "
+                                + "<a href=\""
+                                + ACTIVITY_INFO_URL.formatted(t.get("id"))
+                                + "\">Запись</a>")
                         .collect(Collectors.joining("\n\n"));
             }
         }
         else {
             messageText = "No interested instructors found";
         }
-        return new SendMessage(chatId, messageText);
+        SendMessage message = new SendMessage(chatId, messageText);
+        message.enableHtml(true);
+        return message;
     }
 
     public List<SendMessage> sendLunaMessage() {
@@ -139,12 +143,14 @@ public class CommandService {
             else {
                 messageText = data.stream()
                         .map(t -> t.get("date")
-                                + ":"
-                                + t.get("capacity")
-                                + ":"
+                                + " - "
                                 + t.get("records_count")
-                                + "\n"
-                                + ACTIVITY_INFO_URL.formatted(t.get("id")))
+                                + "/"
+                                + t.get("capacity")
+                                + " - "
+                                + "<a href=\""
+                                + ACTIVITY_INFO_URL.formatted(t.get("id"))
+                                + "\">Запись</a>")
                         .collect(Collectors.joining("\n\n"));
             }
         }
@@ -154,7 +160,9 @@ public class CommandService {
         return botUserEntityList.stream().filter(t -> !t.getLastMessage().equals(messageText)).map(t -> {
             t.setLastMessage(messageText);
             botUserEntityRepository.save(t);
-            return new SendMessage(t.getTgCode(), messageText);
+            SendMessage message = new SendMessage(t.getTgCode(), messageText);
+            message.enableHtml(true);
+            return message;
         }).toList();
     }
 
